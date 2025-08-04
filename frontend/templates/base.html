@@ -58,6 +58,30 @@
             transform: translateY(-1px);
         }
         
+        .user-info {
+            margin-left: auto;
+            margin-right: 15px;
+        }
+        
+        .welcome-text {
+            color: #28a745;
+            font-weight: 600;
+            padding: 8px 12px;
+            background: rgba(40, 167, 69, 0.1);
+            border-radius: 6px;
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+        
+        .logout-btn {
+            background-color: #dc3545 !important;
+            border: 1px solid #dc3545;
+        }
+        
+        .logout-btn:hover {
+            background-color: #c82333 !important;
+            transform: translateY(-1px);
+        }
+        
         .content {
             padding: 20px;
             min-height: calc(100vh - 160px);
@@ -117,9 +141,19 @@
     <nav>
         <ul>
             <div class="logo">🔲 QR Generator</div>
-            <li><a href="{% url 'home' %}">🏠 Inicio</a></li>
-            <li><a href="/admin/">⚙️ Admin</a></li>
-            <li><a href="https://github.com/BigBossSpektrum/QR" target="_blank">📚 GitHub</a></li>
+            {% if user.is_authenticated %}
+                <li><a href="{% url 'home' %}">🏠 Inicio</a></li>
+                <li><a href="/admin/">⚙️ Admin</a></li>
+                <li><a href="https://github.com/BigBossSpektrum/QR" target="_blank">📚 GitHub</a></li>
+                <li class="user-info">
+                    <span class="welcome-text">👋 Hola, {{ user.username }}!</span>
+                </li>
+                <li><a href="{% url 'logout' %}" class="logout-btn">🚪 Cerrar Sesión</a></li>
+            {% else %}
+                <li><a href="{% url 'login' %}">🔐 Iniciar Sesión</a></li>
+                <li><a href="{% url 'register' %}">🎯 Registrarse</a></li>
+                <li><a href="https://github.com/BigBossSpektrum/QR" target="_blank">📚 GitHub</a></li>
+            {% endif %}
             <span class="status-indicator" title="Servicio en línea"></span>
         </ul>
     </nav>

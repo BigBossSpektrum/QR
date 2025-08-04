@@ -1,0 +1,326 @@
+{% extends 'base.html' %}
+
+{% block title %}Registrarse | QR Generator{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1>🎯 Crear Cuenta</h1>
+            <p>Únete a QR Generator y comienza a crear códigos QR personalizados</p>
+        </div>
+        
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.username.id_for_label }}">👤 Usuario:</label>
+                {{ form.username }}
+                {% if form.username.help_text %}
+                    <small class="form-help">{{ form.username.help_text|safe }}</small>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.password1.id_for_label }}">🔑 Contraseña:</label>
+                {{ form.password1 }}
+                {% if form.password1.help_text %}
+                    <small class="form-help">{{ form.password1.help_text|safe }}</small>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.password2.id_for_label }}">🔒 Confirmar Contraseña:</label>
+                {{ form.password2 }}
+                {% if form.password2.help_text %}
+                    <small class="form-help">{{ form.password2.help_text|safe }}</small>
+                {% endif %}
+            </div>
+            
+            <button type="submit" class="btn-primary btn-full">
+                <span class="btn-icon">🚀</span>
+                Crear Mi Cuenta
+            </button>
+        </form>
+        
+        <div class="auth-links">
+            <p>¿Ya tienes una cuenta? <a href="{% url 'login' %}">Inicia sesión aquí</a></p>
+        </div>
+    </div>
+    
+    <div class="auth-features">
+        <h3>🌟 Beneficios de Registrarse</h3>
+        <div class="benefits-grid">
+            <div class="benefit-item">
+                <div class="benefit-icon">🔲</div>
+                <h4>QR Ilimitados</h4>
+                <p>Genera todos los códigos QR que necesites sin restricciones</p>
+            </div>
+            
+            <div class="benefit-item">
+                <div class="benefit-icon">📊</div>
+                <h4>Historial Personal</h4>
+                <p>Accede a todos tus códigos QR creados y gestiónalos fácilmente</p>
+            </div>
+            
+            <div class="benefit-item">
+                <div class="benefit-icon">🔗</div>
+                <h4>URLs Personalizadas</h4>
+                <p>Cada código tiene su propia URL de redirección rastreable</p>
+            </div>
+            
+            <div class="benefit-item">
+                <div class="benefit-icon">📈</div>
+                <h4>Estadísticas</h4>
+                <p>Ve cuántas veces han sido escaneados tus códigos QR</p>
+            </div>
+            
+            <div class="benefit-item">
+                <div class="benefit-icon">🔒</div>
+                <h4>100% Gratuito</h4>
+                <p>Servicio completamente gratuito con almacenamiento seguro</p>
+            </div>
+            
+            <div class="benefit-item">
+                <div class="benefit-icon">☁️</div>
+                <h4>En la Nube</h4>
+                <p>Accede desde cualquier dispositivo, en cualquier momento</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.auth-container {
+    display: flex;
+    max-width: 1200px;
+    margin: 40px auto;
+    gap: 40px;
+    padding: 20px;
+    align-items: flex-start;
+}
+
+.auth-card {
+    flex: 1;
+    max-width: 500px;
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 15px 50px rgba(0,0,0,0.1);
+    border: 1px solid #e9ecef;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.auth-header h1 {
+    font-size: 2.5rem;
+    color: #495057;
+    margin-bottom: 10px;
+}
+
+.auth-header p {
+    color: #6c757d;
+    font-size: 1.1rem;
+    line-height: 1.5;
+}
+
+.messages {
+    margin-bottom: 20px;
+}
+
+.alert {
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+}
+
+.auth-form {
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #495057;
+    font-size: 1.1rem;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 4px rgba(0,123,255,0.1);
+    transform: translateY(-1px);
+}
+
+.form-help {
+    display: block;
+    margin-top: 5px;
+    color: #6c757d;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.btn-full {
+    width: 100%;
+    justify-content: center;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,123,255,0.3);
+}
+
+.btn-icon {
+    font-size: 1.1rem;
+}
+
+.auth-links {
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid #e9ecef;
+}
+
+.auth-links a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.auth-links a:hover {
+    text-decoration: underline;
+}
+
+.auth-features {
+    flex: 1;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 30px;
+    border-radius: 20px;
+    border: 1px solid #dee2e6;
+}
+
+.auth-features h3 {
+    color: #495057;
+    margin-bottom: 30px;
+    font-size: 1.8rem;
+    text-align: center;
+}
+
+.benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.benefit-item {
+    text-align: center;
+    padding: 20px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease;
+}
+
+.benefit-item:hover {
+    transform: translateY(-2px);
+}
+
+.benefit-icon {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+}
+
+.benefit-item h4 {
+    color: #495057;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.benefit-item p {
+    color: #6c757d;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+    .auth-container {
+        flex-direction: column;
+        margin: 20px auto;
+        padding: 10px;
+    }
+    
+    .auth-card {
+        padding: 25px;
+    }
+    
+    .auth-header h1 {
+        font-size: 2rem;
+    }
+    
+    .auth-features {
+        order: -1;
+        margin-bottom: 20px;
+    }
+    
+    .benefits-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}

@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
+from django.contrib.auth.decorators import login_required
 import qrcode
 import io
 import base64
@@ -10,10 +11,14 @@ import json
 
 def redirigir_qr(request, codigo):
     qr = get_object_or_404(CodigoQR, codigo=codigo)
+    # Incrementar contador de accesos
+    qr.accesos += 1
+    qr.save()
     return redirect(qr.contenido)
 
 @csrf_exempt
 @require_http_methods(["POST"])
+@login_required
 def generar_qr(request):
     try:
         data = json.loads(request.body)
@@ -23,10 +28,11 @@ def generar_qr(request):
         if not url:
             return JsonResponse({'error': 'URL es requerida'}, status=400)
         
-        # Crear el objeto en la base de datos
+        # Crear el objeto en la base de datos asociado al usuario
         codigo_qr = CodigoQR.objects.create(
             contenido=url,
-            descripcion=descripcion
+            descripcion=descripcion,
+            usuario=request.user
         )
         
         # Generar la URL de redirección
@@ -56,15 +62,18 @@ def generar_qr(request):
             'codigo': str(codigo_qr.codigo),
             'imagen_base64': img_base64,
             'redirect_url': redirect_url,
-            'descripcion': descripcion
+            'descripcion': descripcion,
+            'usuario': request.user.username
         })
         
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
+@login_required
 def descargar_qr(request, codigo):
     try:
-        codigo_qr = get_object_or_404(CodigoQR, codigo=codigo)
+        # Solo permitir descargar códigos QR del usuario actual
+        codigo_qr = get_object_or_404(CodigoQR, codigo=codigo, usuario=request.user)
         
         # Generar la URL de redirección
         redirect_url = f"{request.scheme}://{request.get_host()}/backend/qr/{codigo_qr.codigo}/"
@@ -84,7 +93,7 @@ def descargar_qr(request, codigo):
         
         # Preparar la respuesta HTTP
         response = HttpResponse(content_type='image/png')
-        response['Content-Disposition'] = f'attachment; filename="qr_code_{codigo}.png"'
+        response['Content-Disposition'] = f'attachment; filename="qr_{request.user.username}_{codigo}.png"'
         
         # Guardar la imagen en la respuesta
         img.save(response, format='PNG')
@@ -93,3 +102,9 @@ def descargar_qr(request, codigo):
         
     except Exception as e:
         return HttpResponse(f'Error: {str(e)}', status=500)
+
+@login_required
+def mis_qr_codes(request):
+    """Vista para mostrar todos los códigos QR del usuario"""
+    codigos = CodigoQR.objects.filter(usuario=request.user)
+    return render(request, 'backend/mis_qr_codes.html', {'codigos': codigos})

@@ -6,11 +6,17 @@
 <div class="home-container">
     <div class="hero-section">
         <h1>🔲 Generador de Códigos QR</h1>
-        <p class="hero-subtitle">Crea códigos QR profesionales para tus URLs y descárgalos en alta calidad</p>
+        <p class="hero-subtitle">Bienvenido, <strong>{{ user.username }}</strong>! Crea códigos QR profesionales para tus URLs</p>
         <div class="hero-stats">
             <span class="stat">⚡ Generación instantánea</span>
-            <span class="stat">📱 Responsive</span>
+            <span class="stat">📱 Solo para ti</span>
             <span class="stat">🔒 Seguro HTTPS</span>
+        </div>
+        <div class="user-actions">
+            <a href="/backend/mis-qr/" class="btn-outline">
+                <span class="btn-icon">📊</span>
+                Ver Mis Códigos QR
+            </a>
         </div>
     </div>
     
@@ -132,13 +138,38 @@
 }
 
 .hero-stats {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    flex-wrap: wrap;
+.stat {
+    background: rgba(255,255,255,0.2);
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: 500;
+    backdrop-filter: blur(10px);
 }
 
-.stat {
+.user-actions {
+    margin-top: 25px;
+}
+
+.btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: transparent;
+    color: white;
+    text-decoration: none;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.btn-outline:hover {
+    background: rgba(255,255,255,0.2);
+    border-color: rgba(255,255,255,0.6);
+    transform: translateY(-2px);
+}stat {
     background: rgba(255,255,255,0.2);
     padding: 10px 20px;
     border-radius: 25px;
