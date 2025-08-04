@@ -38,6 +38,7 @@ if RENDER_EXTERNAL_HOSTNAME:
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',  # Debe ir ANTES de django.contrib.admin
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -152,3 +153,69 @@ if not DEBUG:
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/login/'
+
+# Jazzmin settings
+JAZZMIN_SETTINGS = {
+    "site_title": "QR Generator",
+    "site_header": "QR Generator Admin",
+    "site_brand": "QR Generator",
+    "site_logo": None,
+    "login_logo": None,
+    "welcome_sign": "Bienvenido al Panel de Administración",
+    "copyright": "QR Generator 2025",
+    "search_model": ["auth.User", "backend.CodigoQR"],
+    "user_avatar": None,
+    
+    # Top Menu
+    "topmenu_links": [
+        {"name": "Inicio", "url": "admin:index", "permissions": ["auth.view_user"]},
+        {"name": "Ver Sitio", "url": "/", "new_window": True},
+    ],
+
+    # User Menu on the top right
+    "usermenu_links": [
+        {"name": "Ver Sitio", "url": "/", "new_window": True},
+        {"model": "auth.user"}
+    ],
+
+    # Side Menu
+    "show_sidebar": True,
+    "navigation_expanded": True,
+    
+    # Hide these apps/models
+    "hide_apps": [],
+    "hide_models": [],
+
+    # Custom links to append to app groups
+    "custom_links": {
+        "backend": [{
+            "name": "Generar QR", 
+            "url": "/", 
+            "icon": "fas fa-qrcode",
+            "permissions": ["backend.view_codigoqr"]
+        }]
+    },
+
+    # Icons
+    "icons": {
+        "auth": "fas fa-users-cog",
+        "auth.user": "fas fa-user",
+        "auth.Group": "fas fa-users",
+        "backend.CodigoQR": "fas fa-qrcode",
+    },
+    
+    "default_icon_parents": "fas fa-chevron-circle-right",
+    "default_icon_children": "fas fa-circle",
+
+    # UI Tweaks
+    "custom_css": None,
+    "custom_js": None,
+    "use_google_fonts_cdn": True,
+    "show_ui_builder": False,
+    
+    "changeform_format": "horizontal_tabs",
+    "changeform_format_overrides": {"auth.user": "collapsible", "auth.group": "vertical_tabs"},
+    
+    # Theme
+    "theme": "flatly",
+}
