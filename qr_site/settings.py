@@ -73,7 +73,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'qr_site.context_processors.admin_stats',
             ],
         },
     },
@@ -157,85 +156,30 @@ LOGOUT_REDIRECT_URL = '/login/'
 
 # Jazzmin Admin Theme Configuration
 JAZZMIN_SETTINGS = {
-    # Título de la aplicación
     "site_title": "QR Generator Admin",
-    
-    # Título mostrado en el login
     "site_header": "QR Generator",
-    
-    # Título en el top del admin
     "site_brand": "🔲 QR Generator",
-    
-    # Logo para el top del admin (opcional)
     "site_logo": None,
-    
-    # Logo para el área de login (opcional)
     "login_logo": None,
-    
-    # CSS personalizado (opcional)
-    "custom_css": None,
-    
-    # JS personalizado (opcional)
-    "custom_js": None,
-    
-    # Enlaces del footer
-    "site_logo_classes": "img-circle",
-    
-    # Texto del footer
     "copyright": "BigBossSpektrum © 2025",
-    
-    # Búsqueda en modelos
     "search_model": ["auth.User", "backend.CodigoQR"],
-    
-    # Enlaces del usuario en el top
     "user_avatar": None,
     
-    ############
-    # Top Menu #
-    ############
-    
-    # Links para mostrar en el top del admin
     "topmenu_links": [
-        # URL que apunta al sitio principal
         {"name": "🏠 Inicio", "url": "/", "permissions": ["auth.view_user"]},
-        
-        # URL externa
         {"name": "📚 GitHub", "url": "https://github.com/BigBossSpektrum/QR", "new_window": True},
-        
-        # Soporte
-        {"name": "🔗 Sitio Web", "url": "https://chaos-qr-service.onrender.com/", "new_window": True},
     ],
     
-    #############
-    # User Menu #
-    #############
-    
-    # Links adicionales en el menu del usuario
     "usermenu_links": [
         {"name": "🔒 Cambiar Contraseña", "url": "admin:password_change", "icon": "fas fa-key"},
         {"model": "auth.user"}
     ],
     
-    #############
-    # Side Menu #
-    #############
-    
-    # Mostrar el sidebar
     "show_sidebar": True,
-    
-    # Mostrar navegación en el sidebar
     "navigation_expanded": True,
-    
-    # Ocultar aplicaciones en el sidebar
     "hide_apps": [],
-    
-    # Ocultar modelos específicos
     "hide_models": [],
     
-    # Lista de aplicaciones para cambiar el orden en el sidebar
-    "order_with_respect_to": ["auth", "backend", "frontend"],
-    
-    # Iconos personalizados para aplicaciones
     "icons": {
         "auth": "fas fa-users-cog",
         "auth.user": "fas fa-user",
@@ -243,36 +187,14 @@ JAZZMIN_SETTINGS = {
         "backend.CodigoQR": "fas fa-qrcode",
     },
     
-    # Iconos por defecto para usar cuando no se especifica
     "default_icon_parents": "fas fa-chevron-circle-right",
     "default_icon_children": "fas fa-circle",
     
-    #################
-    # Related Modal #
-    #################
     "related_modal_active": False,
-    
-    #############
-    # UI Tweaks #
-    #############
-    
-    # Enlaces relacionados con objetos en el changelist
     "show_ui_builder": False,
-    
-    ###############
-    # Change view #
-    ###############
-    
     "changeform_format": "horizontal_tabs",
-    
-    # Override buttons por modelo
-    "changeform_format_overrides": {
-        "auth.user": "collapsible",
-        "auth.group": "vertical_tabs"
-    },
 }
 
-# Configuración adicional de UI de Jazzmin
 JAZZMIN_UI_TWEAKS = {
     "navbar_small_text": False,
     "footer_small_text": False,
@@ -293,13 +215,5 @@ JAZZMIN_UI_TWEAKS = {
     "sidebar_nav_flat_style": False,
     "theme": "default",
     "dark_mode_theme": None,
-    "button_classes": {
-        "primary": "btn-primary",
-        "secondary": "btn-secondary",
-        "info": "btn-info",
-        "warning": "btn-warning",
-        "danger": "btn-danger",
-        "success": "btn-success"
-    },
     "actions_sticky_top": True
 }

@@ -1,7 +1,7 @@
 {% extends "admin/index.html" %}
 {% load i18n %}
 
-{% block title %}{% trans 'QR Generator - Panel de Administración' %}{% endblock %}
+{% block title %}QR Generator - Panel de Administración{% endblock %}
 
 {% block content_title %}
 <h1>🔲 Bienvenido al Panel de Administración</h1>
@@ -17,64 +17,12 @@
             color: white; 
             margin-bottom: 30px; 
             text-align: center;">
-    <h2 style="margin-bottom: 15px;">📊 Estadísticas del Sistema</h2>
-    <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 20px;">
-        <div style="background: rgba(255,255,255,0.2); 
-                    padding: 20px; 
-                    border-radius: 10px; 
-                    backdrop-filter: blur(10px);
-                    min-width: 150px;">
-            <h3 style="margin: 0; font-size: 2rem;">{{ total_users }}</h3>
-            <p style="margin: 5px 0 0 0;">👥 Usuarios</p>
-        </div>
-        <div style="background: rgba(255,255,255,0.2); 
-                    padding: 20px; 
-                    border-radius: 10px; 
-                    backdrop-filter: blur(10px);
-                    min-width: 150px;">
-            <h3 style="margin: 0; font-size: 2rem;">{{ total_qrs }}</h3>
-            <p style="margin: 5px 0 0 0;">🔲 Códigos QR</p>
-        </div>
-        <div style="background: rgba(255,255,255,0.2); 
-                    padding: 20px; 
-                    border-radius: 10px; 
-                    backdrop-filter: blur(10px);
-                    min-width: 150px;">
-            <h3 style="margin: 0; font-size: 2rem;">{{ total_accesos }}</h3>
-            <p style="margin: 5px 0 0 0;">📈 Accesos Totales</p>
-        </div>
-    </div>
+    <h2 style="margin-bottom: 15px;">📊 Panel de Control</h2>
+    <p style="margin: 0; font-size: 1.1rem;">
+        Bienvenido, <strong>{{ user.username }}</strong>! 
+        Desde aquí puedes gestionar todos los aspectos de QR Generator.
+    </p>
 </div>
 
 {{ block.super }}
-
-<style>
-.dashboard-stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    margin: 20px 0;
-}
-
-.stat-card {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    text-align: center;
-    border-left: 4px solid #007bff;
-}
-
-.stat-number {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: #007bff;
-    margin-bottom: 10px;
-}
-
-.stat-label {
-    color: #666;
-    font-size: 1.1rem;
-}
-</style>
 {% endblock %}

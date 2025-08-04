@@ -10,24 +10,11 @@ class CodigoQRAdmin(admin.ModelAdmin):
     ordering = ('-creado',)
     list_per_page = 20
     
-    fieldsets = (
-        ('📋 Información Básica', {
-            'fields': ('codigo', 'descripcion', 'usuario')
-        }),
-        ('🔗 Contenido', {
-            'fields': ('contenido',),
-            'description': 'La URL o contenido que será codificado en el QR'
-        }),
-        ('📊 Estadísticas', {
-            'fields': ('accesos', 'creado'),
-            'classes': ('collapse',),
-            'description': 'Información de uso y fecha de creación'
-        }),
-    )
+    fields = ('codigo', 'descripcion', 'contenido', 'usuario', 'accesos', 'creado')
     
     def codigo_corto(self, obj):
         """Muestra una versión corta del código UUID"""
-        return str(obj.codigo)[:8] + "..."
+        return f"{str(obj.codigo)[:8]}..."
     codigo_corto.short_description = "🆔 Código"
     
     def has_change_permission(self, request, obj=None):
@@ -45,9 +32,7 @@ class CodigoQRAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         """Mostrar solo los QR del usuario, excepto para superusuarios"""
         qs = super().get_queryset(request)
-        if request.user.is_superuser:
-            return qs
-        return qs.filter(usuario=request.user)
+        return qs if request.user.is_superuser else qs.filter(usuario=request.user)
     
     def save_model(self, request, obj, form, change):
         """Asignar automáticamente el usuario actual si no está definido"""
