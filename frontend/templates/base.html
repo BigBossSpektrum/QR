@@ -3,54 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Sistema QR{% endblock %}</title>
+    <title>{% block title %}QR Generator - Generador de Códigos QR{% endblock %}</title>
+    <meta name="description" content="Generador profesional de códigos QR. Crea códigos QR para URLs y descárgalos en formato PNG de alta calidad.">
+    <meta name="keywords" content="qr, codigo qr, generador qr, qr code, generator">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23007bff'/><rect x='10' y='10' width='15' height='15' fill='white'/><rect x='35' y='10' width='15' height='15' fill='white'/><rect x='60' y='10' width='15' height='15' fill='white'/><rect x='10' y='35' width='15' height='15' fill='white'/><rect x='60' y='35' width='15' height='15' fill='white'/><rect x='10' y='60' width='15' height='15' fill='white'/><rect x='35' y='60' width='15' height='15' fill='white'/><rect x='60' y='60' width='15' height='15' fill='white'/></svg>">
+    
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f8f9fa;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
         }
+        
         nav {
-            background-color: #343a40;
+            background: linear-gradient(135deg, #343a40 0%, #495057 100%);
             padding: 1rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
+        
         nav ul {
             list-style-type: none;
             margin: 0;
             padding: 0;
             display: flex;
+            align-items: center;
         }
+        
+        nav .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #007bff;
+            margin-right: 30px;
+        }
+        
         nav li {
             margin-right: 20px;
         }
+        
         nav a {
             color: white;
             text-decoration: none;
             padding: 8px 16px;
-            border-radius: 4px;
-            transition: background-color 0.3s;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-weight: 500;
         }
+        
         nav a:hover {
-            background-color: #495057;
+            background-color: #007bff;
+            transform: translateY(-1px);
         }
+        
         .content {
             padding: 20px;
-            min-height: calc(100vh - 80px);
+            min-height: calc(100vh - 160px);
+        }
+        
+        footer {
+            background-color: #343a40;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+        }
+        
+        footer a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        
+        footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: #28a745;
+            border-radius: 50%;
+            margin-left: 10px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        @media (max-width: 768px) {
+            nav ul {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            nav .logo {
+                margin-bottom: 10px;
+                margin-right: 0;
+            }
+            
+            nav li {
+                margin-bottom: 5px;
+            }
         }
     </style>
 </head>
 <body>
     <nav>
         <ul>
-            <li><a href="{% url 'home' %}">Inicio</a></li>
-            <li><a href="/admin/">Admin</a></li>
+            <div class="logo">🔲 QR Generator</div>
+            <li><a href="{% url 'home' %}">🏠 Inicio</a></li>
+            <li><a href="/admin/">⚙️ Admin</a></li>
+            <li><a href="https://github.com/BigBossSpektrum/QR" target="_blank">📚 GitHub</a></li>
+            <span class="status-indicator" title="Servicio en línea"></span>
         </ul>
     </nav>
+    
     <div class="content">
         {% block content %}
         <!-- Content will be injected here -->
         {% endblock %}
     </div>
+    
+    <footer>
+        <p>
+            💻 Desarrollado por <a href="https://github.com/BigBossSpektrum" target="_blank">BigBossSpektrum</a> | 
+            🚀 Desplegado en <a href="https://render.com" target="_blank">Render</a> | 
+            📅 2025
+        </p>
+        <p>
+            <small>🔒 Servicio seguro con HTTPS | 🌐 Disponible 24/7</small>
+        </p>
+    </footer>
 </body>
 </html>

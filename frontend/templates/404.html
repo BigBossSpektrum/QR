@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}404 - Página no encontrada | QR Generator{% endblock %}
+
+{% block content %}
+<div style="text-align: center; padding: 60px 20px; max-width: 600px; margin: 0 auto;">
+    <div style="font-size: 8rem; margin-bottom: 20px;">🤖</div>
+    <h1 style="font-size: 3rem; color: #6c757d; margin-bottom: 20px;">404</h1>
+    <h2 style="color: #495057; margin-bottom: 30px;">¡Oops! Página no encontrada</h2>
+    <p style="font-size: 1.2rem; color: #6c757d; margin-bottom: 40px; line-height: 1.6;">
+        La página que buscas no existe o ha sido movida. 
+        <br>¿Qué tal si generas un nuevo código QR en su lugar?
+    </p>
+    
+    <div style="margin: 40px 0;">
+        <a href="{% url 'home' %}" style="
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+            🏠 Ir al Inicio
+        </a>
+    </div>
+    
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-top: 40px;">
+        <h3 style="color: #495057; margin-bottom: 15px;">Enlaces útiles:</h3>
+        <ul style="list-style: none; padding: 0;">
+            <li style="margin: 10px 0;">
+                <a href="{% url 'home' %}" style="color: #007bff; text-decoration: none;">
+                    🔲 Generador de QR
+                </a>
+            </li>
+            <li style="margin: 10px 0;">
+                <a href="/admin/" style="color: #007bff; text-decoration: none;">
+                    ⚙️ Panel de Administración
+                </a>
+            </li>
+            <li style="margin: 10px 0;">
+                <a href="https://github.com/BigBossSpektrum/QR" target="_blank" style="color: #007bff; text-decoration: none;">
+                    📚 Código en GitHub
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
