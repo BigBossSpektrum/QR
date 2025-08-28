@@ -20,11 +20,15 @@
         <div class="stats-section">
             <div class="stat-card">
                 <div class="stat-number">{{ total_codigos }}</div>
-                <div class="stat-label">Códigos Creados</div>
+                <div class="stat-label">Total Códigos</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">{{ codigos|length }}</div>
-                <div class="stat-label">Códigos Mostrados</div>
+                <div class="stat-number" style="color: #28a745;">{{ codigos_activos }}</div>
+                <div class="stat-label">Códigos Activos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" style="color: #dc3545;">{{ codigos_inactivos }}</div>
+                <div class="stat-label">Códigos Deshabilitados</div>
             </div>
             <div class="stat-card">
                 <div class="stat-number">{{ total_accesos }}</div>
@@ -32,12 +36,36 @@
             </div>
         </div>
 
+        <div class="filter-section">
+            <h3>🔍 Filtrar Códigos QR</h3>
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">
+                    📋 Todos ({{ total_codigos }})
+                </button>
+                <button class="filter-btn" data-filter="active">
+                    ✅ Activos ({{ codigos_activos }})
+                </button>
+                <button class="filter-btn" data-filter="inactive">
+                    🚫 Deshabilitados ({{ codigos_inactivos }})
+                </button>
+            </div>
+        </div>
+
         <div class="qr-grid">
             {% for codigo in codigos %}
-            <div class="qr-card">
+            <div class="qr-card" data-status="{% if codigo.activo %}active{% else %}inactive{% endif %}">
                 <div class="qr-header">
                     <h3>{{ codigo.descripcion|default:"Sin descripción" }}</h3>
-                    <span class="qr-date">{{ codigo.creado|date:"d/m/Y H:i" }}</span>
+                    <div class="qr-status-date">
+                        <span class="qr-status {% if codigo.activo %}status-active{% else %}status-inactive{% endif %}">
+                            {% if codigo.activo %}
+                                ✅ Activo
+                            {% else %}
+                                🚫 Deshabilitado
+                            {% endif %}
+                        </span>
+                        <span class="qr-date">{{ codigo.creado|date:"d/m/Y H:i" }}</span>
+                    </div>
                 </div>
                 
                 <div class="qr-preview">
@@ -59,8 +87,14 @@
                         </a>
                     </div>
                     <div class="info-row">
-                        <strong>📊 Escaneado:</strong>
-                        <span class="access-count">{{ codigo.accesos }} veces</span>
+                        <strong>📊 Estado:</strong>
+                        <span class="status-badge {% if codigo.activo %}status-active{% else %}status-inactive{% endif %}">
+                            {% if codigo.activo %}
+                                ✅ Activo - Escaneado {{ codigo.accesos }} veces
+                            {% else %}
+                                🚫 Deshabilitado - Escaneado {{ codigo.accesos }} veces (antes de deshabilitar)
+                            {% endif %}
+                        </span>
                     </div>
                     <div class="info-row">
                         <strong>🔗 URL de redirección:</strong>
@@ -69,16 +103,28 @@
                 </div>
                 
                 <div class="qr-actions">
-                    <a href="{% url 'descargar_qr' codigo.codigo %}" class="btn-download">
-                        📥 Descargar
-                    </a>
-                    <button onclick="copyToClipboard('{{ request.scheme }}://{{ request.get_host }}/backend/qr/{{ codigo.codigo }}/')" 
-                            class="btn-copy">
-                        📋 Copiar URL
-                    </button>
-                    <a href="{{ codigo.contenido }}" target="_blank" class="btn-visit">
-                        🔗 Visitar
-                    </a>
+                    {% if codigo.activo %}
+                        <a href="{% url 'descargar_qr' codigo.codigo %}" class="btn-download">
+                            📥 Descargar
+                        </a>
+                        <button onclick="copyToClipboard('{{ request.scheme }}://{{ request.get_host }}/backend/qr/{{ codigo.codigo }}/')" 
+                                class="btn-copy">
+                            📋 Copiar URL
+                        </button>
+                        <a href="{{ codigo.contenido }}" target="_blank" class="btn-visit">
+                            🔗 Visitar
+                        </a>
+                        <button onclick="toggleQrEstado('{{ codigo.codigo }}', false)" class="btn-disable">
+                            🚫 Deshabilitar
+                        </button>
+                    {% else %}
+                        <button onclick="toggleQrEstado('{{ codigo.codigo }}', true)" class="btn-enable">
+                            ✅ Habilitar
+                        </button>
+                        <a href="{% url 'descargar_qr' codigo.codigo %}" class="btn-download">
+                            📥 Descargar
+                        </a>
+                    {% endif %}
                     <button onclick="eliminarQr('{{ codigo.codigo }}')" class="btn-delete">
                         🗑️ Eliminar
                     </button>
@@ -158,6 +204,52 @@
     font-weight: 500;
 }
 
+.filter-section {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    border: 2px solid #f8f9fa;
+    text-align: center;
+}
+
+.filter-section h3 {
+    color: #495057;
+    margin-bottom: 20px;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    padding: 12px 25px;
+    border: 2px solid #e9ecef;
+    border-radius: 25px;
+    background: white;
+    color: #6c757d;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+}
+
+.filter-btn:hover {
+    border-color: #667eea;
+    color: #667eea;
+    transform: translateY(-2px);
+}
+
+.filter-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: transparent;
+}
+
 .qr-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
@@ -182,10 +274,17 @@
 .qr-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: 20px;
     padding-bottom: 15px;
     border-bottom: 2px solid #f8f9fa;
+}
+
+.qr-status-date {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
 }
 
 .qr-header h3 {
@@ -279,7 +378,37 @@
     flex-wrap: wrap;
 }
 
-.btn-download, .btn-copy, .btn-visit, .btn-delete {
+.qr-date {
+    color: #6c757d;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.qr-status {
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.status-active {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-inactive {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.btn-download, .btn-copy, .btn-visit, .btn-delete, .btn-enable, .btn-disable {
     flex: 1;
     padding: 12px 15px;
     border-radius: 8px;
@@ -330,6 +459,26 @@
 
 .btn-delete:hover {
     background: #c82333;
+    transform: translateY(-2px);
+}
+
+.btn-enable {
+    background: #28a745;
+    color: white;
+}
+
+.btn-enable:hover {
+    background: #218838;
+    transform: translateY(-2px);
+}
+
+.btn-disable {
+    background: #ffc107;
+    color: #212529;
+}
+
+.btn-disable:hover {
+    background: #e0a800;
     transform: translateY(-2px);
 }
 
@@ -480,6 +629,36 @@ function eliminarQr(codigoUuid) {
     }
 }
 
+function toggleQrEstado(codigoUuid, habilitar) {
+    const accion = habilitar ? 'habilitar' : 'deshabilitar';
+    const mensaje = habilitar ? 
+        '¿Quieres habilitar este código QR? Volverá a funcionar normalmente.' : 
+        '¿Quieres deshabilitar este código QR? Las personas que lo escaneen verán un mensaje de error.';
+    
+    if (confirm(mensaje)) {
+        fetch(`/backend/toggle-qr/${codigoUuid}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Mostrar notificación de éxito
+                showNotification(data.message, 'success');
+                // Recargar la página para actualizar la interfaz
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                alert('Error al ' + accion + ': ' + data.error);
+            }
+        })
+        .catch(error => {
+            alert('Error al ' + accion + ': ' + error);
+        });
+    }
+}
+
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -494,6 +673,60 @@ function getCookie(name) {
     }
     return cookieValue;
 }
+
+function showNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.innerHTML = type === 'success' ? `✅ ${message}` : `❌ ${message}`;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${type === 'success' ? '#28a745' : '#dc3545'};
+        color: white;
+        padding: 15px 25px;
+        border-radius: 10px;
+        font-weight: 600;
+        z-index: 1000;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        animation: slideIn 0.3s ease;
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Remover notificación después de 3 segundos
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
+// Funcionalidad de filtrado
+document.addEventListener('DOMContentLoaded', function() {
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const qrCards = document.querySelectorAll('.qr-card');
+    
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Remover clase active de todos los botones
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            // Agregar clase active al botón clickeado
+            this.classList.add('active');
+            
+            const filter = this.dataset.filter;
+            
+            qrCards.forEach(card => {
+                if (filter === 'all') {
+                    card.style.display = 'block';
+                } else if (filter === 'active' && card.dataset.status === 'active') {
+                    card.style.display = 'block';
+                } else if (filter === 'inactive' && card.dataset.status === 'inactive') {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });
+});
 
 // Animación para la notificación
 const style = document.createElement('style');

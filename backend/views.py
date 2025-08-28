@@ -11,7 +11,15 @@ import json
 
 def redirigir_qr(request, codigo):
     qr = get_object_or_404(CodigoQR, codigo=codigo)
-    # Incrementar contador de accesos
+    
+    # Verificar si el código QR está activo
+    if not qr.activo:
+        return render(request, 'backend/qr_deshabilitado.html', {
+            'codigo': qr.codigo,
+            'descripcion': qr.descripcion
+        })
+    
+    # Incrementar contador de accesos solo si está activo
     qr.accesos += 1
     qr.save()
     return redirect(qr.contenido)
@@ -143,10 +151,14 @@ def mis_qr_codes(request):
     
     # Calcular estadísticas
     total_accesos = sum(codigo.accesos for codigo in codigos)
+    codigos_activos = codigos.filter(activo=True)
+    codigos_inactivos = codigos.filter(activo=False)
     
     context = {
         'codigos': codigos,
         'total_codigos': codigos.count(),
+        'codigos_activos': codigos_activos.count(),
+        'codigos_inactivos': codigos_inactivos.count(),
         'total_accesos': total_accesos,
     }
     return render(request, 'backend/mis_qr_codes.html', context)
@@ -160,5 +172,24 @@ def eliminar_qr(request, codigo):
         codigo_qr = get_object_or_404(CodigoQR, codigo=codigo, usuario=request.user)
         codigo_qr.delete()
         return JsonResponse({'success': True, 'message': 'Código QR eliminado exitosamente'})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+@login_required
+def toggle_qr_estado(request, codigo):
+    """Vista para habilitar/deshabilitar un código QR"""
+    try:
+        codigo_qr = get_object_or_404(CodigoQR, codigo=codigo, usuario=request.user)
+        codigo_qr.activo = not codigo_qr.activo
+        codigo_qr.save()
+        
+        estado = "habilitado" if codigo_qr.activo else "deshabilitado"
+        return JsonResponse({
+            'success': True, 
+            'message': f'Código QR {estado} exitosamente',
+            'activo': codigo_qr.activo
+        })
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)

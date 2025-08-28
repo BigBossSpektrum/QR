@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+
+{% block title %}Código QR Deshabilitado | QR Generator{% endblock %}
+
+{% block content %}
+<div class="error-container">
+    <div class="error-card">
+        <div class="error-icon">🚫</div>
+        <h1>Código QR Deshabilitado</h1>
+        <p class="error-message">
+            Este código QR ha sido deshabilitado temporalmente por su propietario.
+        </p>
+        
+        {% if descripcion %}
+        <div class="qr-info">
+            <strong>Descripción:</strong> {{ descripcion }}
+        </div>
+        {% endif %}
+        
+        <div class="error-actions">
+            <a href="{% url 'home' %}" class="btn-primary">
+                <span class="btn-icon">🔲</span>
+                Crear Mi Propio QR
+            </a>
+            <button onclick="history.back()" class="btn-secondary">
+                <span class="btn-icon">←</span>
+                Volver Atrás
+            </button>
+        </div>
+        
+        <div class="help-text">
+            <p>Si eres el propietario de este código QR, puedes habilitarlo nuevamente desde tu panel de control.</p>
+        </div>
+    </div>
+</div>
+
+<style>
+.error-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    padding: 20px;
+}
+
+.error-card {
+    background: white;
+    padding: 60px 40px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    border: 2px solid #dc3545;
+    max-width: 500px;
+    width: 100%;
+}
+
+.error-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    color: #dc3545;
+}
+
+.error-card h1 {
+    color: #dc3545;
+    margin-bottom: 20px;
+    font-size: 2rem;
+}
+
+.error-message {
+    font-size: 1.1rem;
+    color: #6c757d;
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+.qr-info {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px;
+    margin: 20px 0;
+    color: #495057;
+}
+
+.error-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin: 30px 0;
+    flex-wrap: wrap;
+}
+
+.btn-primary, .btn-secondary {
+    padding: 15px 25px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+    transform: translateY(-3px);
+}
+
+.btn-icon {
+    font-size: 1.1em;
+}
+
+.help-text {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #dee2e6;
+}
+
+.help-text p {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .error-card {
+        padding: 40px 30px;
+    }
+    
+    .error-card h1 {
+        font-size: 1.5rem;
+    }
+    
+    .error-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .btn-primary, .btn-secondary {
+        width: 100%;
+        max-width: 250px;
+        justify-content: center;
+    }
+}
+</style>
+{% endblock %}
