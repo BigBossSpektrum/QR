@@ -83,13 +83,24 @@ WSGI_APPLICATION = 'qr_site.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default=f'sqlite:///{BASE_DIR / "db.sqlite3"}',
-        conn_max_age=600,
-        conn_health_checks=True,
-    )
-}
+# Para desarrollo local usamos SQLite, para producción PostgreSQL
+if os.environ.get('DATABASE_URL'):
+    # Producción en Render con PostgreSQL
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.environ.get('DATABASE_URL'),
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
+    }
+else:
+    # Desarrollo local con SQLite
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
