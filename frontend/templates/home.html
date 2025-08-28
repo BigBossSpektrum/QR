@@ -3,6 +3,7 @@
 {% block title %}QR Generator - Generador Profesional de Códigos QR{% endblock %}
 
 {% block content %}
+{% csrf_token %}
 <div class="home-container">
     <div class="hero-section">
         <h1>🔲 Generador de Códigos QR</h1>
@@ -502,6 +503,22 @@
 </style>
 
 <script>
+// Función para obtener el token CSRF
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('qrForm');
     const loading = document.getElementById('loading');
@@ -526,6 +543,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),
                 },
                 body: JSON.stringify({
                     url: url,

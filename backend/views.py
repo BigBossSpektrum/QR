@@ -29,6 +29,10 @@ def redirigir_qr(request, codigo):
 @login_required
 def generar_qr(request):
     try:
+        # Debug: verificar usuario
+        print(f"Usuario autenticado: {request.user.is_authenticated}")
+        print(f"Usuario: {request.user}")
+        
         data = json.loads(request.body)
         url = data.get('url')
         descripcion = data.get('descripcion', '')
@@ -42,6 +46,8 @@ def generar_qr(request):
             descripcion=descripcion,
             usuario=request.user
         )
+        
+        print(f"QR creado: {codigo_qr.codigo}")
         
         # Generar la URL de redirección
         redirect_url = f"{request.scheme}://{request.get_host()}/backend/qr/{codigo_qr.codigo}/"
