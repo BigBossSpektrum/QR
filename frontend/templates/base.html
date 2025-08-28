@@ -75,6 +75,13 @@
         .logout-btn {
             background-color: #dc3545 !important;
             border: 1px solid #dc3545;
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
         
         .logout-btn:hover {
@@ -150,7 +157,12 @@
                 <li class="user-info">
                     <span class="welcome-text">👋 Hola, {{ user.username }}!</span>
                 </li>
-                <li><a href="{% url 'logout' %}" class="logout-btn">🚪 Cerrar Sesión</a></li>
+                <li>
+                    <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="logout-btn">🚪 Cerrar Sesión</button>
+                    </form>
+                </li>
             {% else %}
                 <li><a href="{% url 'login' %}">🔐 Iniciar Sesión</a></li>
                 <li><a href="{% url 'register' %}">🎯 Registrarse</a></li>
