@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # 🚀 Script de Deploy Automatizado - Sistema QR Híbrido
-# Clever Cloud + GitHub Pages
+# Backend (API) → Clever Cloud | Frontend (Estático) → GitHub Pages
 
 set -e  # Salir si hay algún error
 
 echo "🚀 Iniciando deploy del Sistema QR Híbrido..."
-echo "📊 Backend: Clever Cloud | Frontend: GitHub Pages"
+echo "📊 Backend API: Clever Cloud | Frontend Estático: GitHub Pages"
 echo ""
 
 # Verificar que estamos en el directorio correcto
@@ -27,7 +27,7 @@ ask_yes_no() {
     done
 }
 
-echo "🔧 Preparando archivos..."
+echo "🔧 Preparando archivos para deploy híbrido..."
 
 # Asegurar que requirements.txt esté actualizado
 if ! grep -q "django-cors-headers" requirements.txt; then
@@ -35,12 +35,20 @@ if ! grep -q "django-cors-headers" requirements.txt; then
     echo "✅ django-cors-headers agregado a requirements.txt"
 fi
 
-# Deploy a Clever Cloud
-echo ""
-echo "🌩️  DEPLOY A CLEVER CLOUD"
-echo "========================="
+if ! grep -q "psycopg2-binary" requirements.txt; then
+    echo "psycopg2-binary==2.9.7" >> requirements.txt
+    echo "✅ psycopg2-binary agregado a requirements.txt"
+fi
 
-if ask_yes_no "¿Quieres hacer deploy a Clever Cloud?"; then
+# ==================================================
+# PASO 1: DEPLOY BACKEND A CLEVER CLOUD
+# ==================================================
+
+echo ""
+echo "🌩️  STEP 1: DEPLOY BACKEND A CLEVER CLOUD"
+echo "=========================================="
+
+if ask_yes_no "¿Quieres hacer deploy del backend a Clever Cloud?"; then
     
     # Verificar si clever-tools está instalado
     if ! command -v clever &> /dev/null; then
@@ -98,78 +106,145 @@ if ask_yes_no "¿Quieres hacer deploy a Clever Cloud?"; then
     clever deploy
     
     echo "✅ Deploy a Clever Cloud completado!"
-    echo "🔗 Backend disponible en: https://$APP_DOMAIN"
+    echo "🔗 Backend API disponible en: https://$APP_DOMAIN"
     echo "🔐 Admin panel: https://$APP_DOMAIN/admin"
+    
+    # Crear un archivo con la URL del backend para el frontend
+    echo "$APP_DOMAIN" > backend_url.txt
     
 else
     echo "⏭️  Saltando deploy a Clever Cloud"
     APP_DOMAIN="app-your-id.cleverapps.io"
+    
+    # Leer URL del backend si existe el archivo
+    if [ -f "backend_url.txt" ]; then
+        APP_DOMAIN=$(cat backend_url.txt)
+        echo "📋 Usando backend previamente configurado: $APP_DOMAIN"
+    else
+        read -p "Ingresa la URL de tu backend en Clever Cloud (sin https://): " APP_DOMAIN
+        echo "$APP_DOMAIN" > backend_url.txt
+    fi
 fi
 
-# Deploy a GitHub Pages
+# ==================================================
+# PASO 2: GENERAR ARCHIVOS ESTÁTICOS PARA GITHUB PAGES
+# ==================================================
+
 echo ""
-echo "📄 DEPLOY A GITHUB PAGES"
-echo "========================"
+echo "📄 STEP 2: GENERAR ARCHIVOS PARA GITHUB PAGES"
+echo "=============================================="
+
+if ask_yes_no "¿Quieres generar archivos estáticos para GitHub Pages?"; then
+    
+    echo "🎨 Generando archivos estáticos del frontend..."
+    
+    # Ejecutar el script de generación
+    chmod +x generate-github-pages.sh
+    
+    # Actualizar la URL del backend en el script de generación
+    sed -i "s|backend_api_url = 'https://tu-app.cleverapps.io'|backend_api_url = 'https://$APP_DOMAIN'|g" generate-github-pages.sh
+    
+    # Ejecutar la generación
+    ./generate-github-pages.sh
+    
+    echo "✅ Archivos estáticos generados en ./github-pages/"
+    
+else
+    echo "⏭️  Saltando generación de archivos estáticos"
+fi
+
+# ==================================================
+# PASO 3: DEPLOY A GITHUB PAGES
+# ==================================================
+
+echo ""
+echo "� STEP 3: DEPLOY A GITHUB PAGES"
+echo "================================="
 
 if ask_yes_no "¿Quieres hacer deploy a GitHub Pages?"; then
     
-    echo "🔄 Cambiando a rama gh-pages..."
-    
-    # Guardar rama actual
-    CURRENT_BRANCH=$(git branch --show-current)
-    
-    # Crear o cambiar a rama gh-pages
-    if git show-ref --verify --quiet refs/heads/gh-pages; then
-        git checkout gh-pages
-    else
-        git checkout -b gh-pages
+    # Verificar que existen los archivos estáticos
+    if [ ! -f "github-pages/index.html" ]; then
+        echo "❌ Error: No se encontraron archivos estáticos. Ejecuta primero la generación."
+        exit 1
     fi
     
-    # Copiar archivos del frontend
-    echo "📁 Copiando archivos frontend..."
-    cp github-pages/* .
+    echo "📤 Subiendo archivos estáticos a GitHub..."
     
-    # Actualizar URL del backend en el HTML
-    echo "🔧 Actualizando configuración del frontend..."
-    sed -i "s|http://127.0.0.1:8000|https://$APP_DOMAIN|g" index.html
+    # Añadir archivos al repositorio
+    git add github-pages/
+    git add backend_url.txt
     
-    # Commit y push
-    echo "📤 Subiendo a GitHub Pages..."
-    git add .
-    git commit -m "🌐 Deploy frontend GitHub Pages para QR System
+    # Commit los cambios
+    git commit -m "🌐 Actualizar frontend estático para GitHub Pages
 
-✨ Funcionalidades:
-- Interface dual: QR directo + Redirección
-- Bootstrap UI responsive
-- CORS configurado con backend
-- Integración con Clever Cloud: $APP_DOMAIN"
+✨ Características:
+- Frontend estático completamente funcional
+- Conectado con backend API: https://$APP_DOMAIN
+- Interfaz moderna con Bootstrap 5
+- Sistema híbrido Clever Cloud + GitHub Pages
+
+🔧 Cambios:
+- Archivos estáticos actualizados
+- URL del backend configurada
+- CORS habilitado para GitHub Pages" || echo "No hay cambios para commitear"
     
-    git push origin gh-pages
-    
-    # Volver a la rama original
-    git checkout "$CURRENT_BRANCH"
+    # Push al repositorio
+    git push origin main
     
     echo "✅ Deploy a GitHub Pages completado!"
-    echo "🔗 Frontend disponible en: https://$(git config --get remote.origin.url | sed 's/.*github.com[:/]//' | sed 's/\.git$//' | sed 's/.*\///')"
+    echo "🔗 Frontend estático disponible en: https://bigbossspektrum.github.io/QR"
+    
+    echo ""
+    echo "📋 Configurar GitHub Pages:"
+    echo "1. Ve a Settings > Pages en tu repositorio"
+    echo "2. Selecciona 'Deploy from a branch'"
+    echo "3. Elige 'main' branch"
+    echo "4. Selecciona '/ (root)' folder"
+    echo "5. Activa 'GitHub Pages' para usar ./github-pages/"
     
 else
     echo "⏭️  Saltando deploy a GitHub Pages"
 fi
 
-# Resumen final
+# ==================================================
+# RESUMEN FINAL
+# ==================================================
+
 echo ""
-echo "🎉 DEPLOY COMPLETADO!"
-echo "===================="
+echo "🎉 DEPLOY HÍBRIDO COMPLETADO!"
+echo "=============================="
 echo ""
-echo "🔗 URLs de tu sistema:"
-echo "  📱 Frontend: https://tu-usuario.github.io/QR"
-echo "  🖥️  Backend:  https://$APP_DOMAIN"
-echo "  🔐 Admin:    https://$APP_DOMAIN/admin"
+echo "🏗️  ARQUITECTURA IMPLEMENTADA:"
+echo "   � Frontend Estático → GitHub Pages"
+echo "   🖥️  Backend API → Clever Cloud"
+echo "   💾 Base de Datos → PostgreSQL (Clever Cloud)"
+echo ""
+echo "�🔗 URLs de tu sistema:"
+echo "   🌐 Frontend: https://bigbossspektrum.github.io/QR"
+echo "   ⚡ Backend:  https://$APP_DOMAIN"
+echo "   🔐 Admin:    https://$APP_DOMAIN/admin"
+echo ""
+echo "� FLUJO DE FUNCIONAMIENTO:"
+echo "   1. Usuario visita GitHub Pages"
+echo "   2. Llena formulario para generar QR"
+echo "   3. JavaScript envía datos a Clever Cloud API"
+echo "   4. Backend genera QR y lo guarda en BD"
+echo "   5. Usuario escanea QR → Redirección via Clever Cloud"
 echo ""
 echo "📋 Próximos pasos:"
-echo "  1. Activar GitHub Pages en Settings del repo"
-echo "  2. Esperar ~5 minutos para propagación DNS"
-echo "  3. Probar ambas interfaces"
+echo "   1. ⏰ Esperar 2-5 minutos para propagación"
+echo "   2. 🔧 Configurar GitHub Pages si no está activo"
+echo "   3. 🧪 Probar generación de QR en frontend"
+echo "   4. 📱 Probar escaneo de QR generado"
+echo "   5. 🔐 Crear superusuario: clever run python manage.py createsuperuser"
+echo ""
+echo "🆘 En caso de problemas:"
+echo "   - Verificar CORS en settings de Clever Cloud"
+echo "   - Verificar variables de entorno"
+echo "   - Revisar logs: clever logs"
+echo "   - Contactar soporte si persisten errores"
+echo ""
 echo ""
 echo "🧪 Para testing local:"
 echo "  python manage.py runserver --settings=qr_site.local_clever_settings"

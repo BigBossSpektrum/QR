@@ -146,6 +146,7 @@ LOGOUT_REDIRECT_URL = '/login/'
 # CORS settings para GitHub Pages
 CORS_ALLOWED_ORIGINS = [
     "https://bigbossspektrum.github.io",
+    "https://bigbossspektrum.github.io/QR",
     "http://localhost:3000",  # Para desarrollo local
     "http://127.0.0.1:3000",
     "http://localhost:8000",
@@ -165,6 +166,8 @@ CORS_ALLOWED_HEADERS = [
     'x-csrftoken',
     'x-requested-with',
 ]
+
+CORS_ALLOW_ALL_ORIGINS = False  # Usar solo orígenes específicos para seguridad
 
 # Logging para debugging en Clever Cloud
 LOGGING = {

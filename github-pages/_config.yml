@@ -1,34 +1,32 @@
-# GitHub Pages Configuration
+# GitHub Pages configuration
 title: "Generador QR"
-description: "Generador de códigos QR para GitHub Pages"
-theme: minima
-
-# Configuración del sitio
+description: "Generador de códigos QR con backend en Clever Cloud"
 baseurl: ""
 url: "https://bigbossspektrum.github.io"
 
-# Configuración de Jekyll
+# Jekyll configuration
 markdown: kramdown
 highlighter: rouge
-permalink: pretty
+theme: minima
 
-# Plugins
-plugins:
-  - jekyll-feed
-  - jekyll-sitemap
-
-# Configuración de archivos
-include:
-  - _pages
-
-# Excluir archivos del build
+# Exclude files
 exclude:
   - README.md
   - Gemfile
   - Gemfile.lock
-  - node_modules/
-  - vendor/
+  - node_modules
+  - vendor
+  - .bundle
+  - .sass-cache
+  - .jekyll-cache
+  - .jekyll-metadata
 
-# Configuración para GitHub Pages
-github:
-  repository_nwo: BigBossSpektrum/QR
+# Include files
+include:
+  - _config.yml
+
+# GitHub Pages specific
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag

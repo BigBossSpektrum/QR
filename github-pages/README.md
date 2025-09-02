@@ -1,41 +1,33 @@
-# Configuración para GitHub Pages
+# Generador QR - GitHub Pages
 
-github-pages/
-├── index.html          # Interfaz principal
-├── _config.yml         # Configuración Jekyll
-├── README.md          # Documentación
-└── assets/
-    ├── css/
-    │   └── custom.css
-    └── js/
-        └── qr-generator.js
+Este es el frontend estático del generador de códigos QR, desplegado en GitHub Pages.
 
-## Pasos para Deploy:
+## Características
 
-1. **Habilitar GitHub Pages:**
-   - Ve a Settings > Pages
-   - Source: Deploy from a branch
-   - Branch: main o master
-   - Folder: /github-pages
+- ✨ Interfaz moderna y responsiva
+- 🔗 Conexión con backend API en Clever Cloud
+- 📱 Compatible con dispositivos móviles
+- 🎨 Diseño atractivo con Bootstrap
 
-2. **URL resultante:**
-   - https://bigbossspektrum.github.io/QR/
+## Tecnologías
 
-3. **Funcionalidades:**
-   - ✅ Generación QR directa (sin servidor)
-   - ✅ Generación QR con redirección (usando Render)
-   - ✅ Historial local (localStorage)
-   - ✅ Descarga de QRs
-   - ✅ Interfaz responsive
+- HTML5, CSS3, JavaScript
+- Bootstrap 5
+- Font Awesome
+- API REST (Clever Cloud)
 
-## Modos de Operación:
+## Uso
 
-### Modo Directo:
-- QR apunta directamente al destino
-- No requiere servidor
-- Perfecto para URLs simples
+1. Visita: [https://bigbossspektrum.github.io/QR](https://bigbossspektrum.github.io/QR)
+2. Ingresa la URL que quieres convertir a QR
+3. Opcionalmente añade una descripción
+4. Haz clic en "Generar QR"
+5. Descarga tu código QR
 
-### Modo Redirección:
-- QR apunta a tu servidor en Render
-- Mantiene estadísticas y control
-- Mejor para casos profesionales
+Los códigos QR generados se guardan en la base de datos de Clever Cloud y las redirecciones funcionan a través del backend API.
+
+## Backend API
+
+- **URL**: https://tu-app.cleverapps.io
+- **Endpoint**: `POST /backend/api/generar-qr/`
+- **Redirección**: `GET /backend/qr/<uuid>/`

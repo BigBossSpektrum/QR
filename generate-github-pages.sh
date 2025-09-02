@@ -1,3 +1,51 @@
+#!/bin/bash
+
+# Script para generar archivos estáticos para GitHub Pages
+
+echo "🚀 Generando archivos estáticos para GitHub Pages..."
+
+# Verificar que estamos en el directorio correcto
+if [ ! -f "manage.py" ]; then
+    echo "❌ Error: No se encuentra manage.py. Ejecuta desde la raíz del proyecto."
+    exit 1
+fi
+
+# Activar entorno virtual si existe
+if [ -d "env" ]; then
+    echo "📦 Activando entorno virtual..."
+    if [ -f "env/Scripts/activate" ]; then
+        source env/Scripts/activate  # Windows
+    elif [ -f "env/bin/activate" ]; then
+        source env/bin/activate      # Linux/Mac
+    fi
+fi
+
+# Configurar variables de entorno para GitHub Pages
+export DJANGO_SETTINGS_MODULE=qr_site.github_pages_settings
+
+echo "📝 Generando archivos estáticos..."
+
+# Limpiar directorio de destino
+if [ -d "github-pages" ]; then
+    rm -rf github-pages/*
+else
+    mkdir -p github-pages
+fi
+
+# Configurar la URL del backend (cambiar por tu URL de Clever Cloud)
+BACKEND_API_URL='https://tu-app.cleverapps.io'
+
+# Buscar archivo con URL del backend si existe
+if [ -f "backend_url.txt" ]; then
+    BACKEND_URL_FROM_FILE=$(cat backend_url.txt)
+    BACKEND_API_URL="https://$BACKEND_URL_FROM_FILE"
+    echo "📋 Usando backend desde archivo: $BACKEND_API_URL"
+fi
+
+echo "🎨 Generando index.html desde template..."
+
+# Crear index.html directamente usando el template como base
+cat > github-pages/index.html << 'EOF'
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -262,7 +310,13 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const BACKEND_API_URL = 'https://tu-app.cleverapps.io';
+EOF
+
+# Añadir la configuración del backend dinámicamente
+echo "        const BACKEND_API_URL = '$BACKEND_API_URL';" >> github-pages/index.html
+
+# Continuar con el resto del JavaScript
+cat >> github-pages/index.html << 'EOF'
         let currentQRData = null;
 
         document.getElementById('qrForm').addEventListener('submit', async function(e) {
@@ -368,3 +422,104 @@
     </script>
 </body>
 </html>
+EOF
+
+# Crear _config.yml para GitHub Pages
+echo "📄 Creando _config.yml..."
+cat > github-pages/_config.yml << EOF
+# GitHub Pages configuration
+title: "Generador QR"
+description: "Generador de códigos QR con backend en Clever Cloud"
+baseurl: ""
+url: "https://bigbossspektrum.github.io"
+
+# Jekyll configuration
+markdown: kramdown
+highlighter: rouge
+theme: minima
+
+# Exclude files
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+  - .bundle
+  - .sass-cache
+  - .jekyll-cache
+  - .jekyll-metadata
+
+# Include files
+include:
+  - _config.yml
+
+# GitHub Pages specific
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+EOF
+
+# Crear README.md para GitHub Pages
+echo "📖 Creando README.md..."
+cat > github-pages/README.md << EOF
+# Generador QR - GitHub Pages
+
+Este es el frontend estático del generador de códigos QR, desplegado en GitHub Pages.
+
+## Características
+
+- ✨ Interfaz moderna y responsiva
+- 🔗 Conexión con backend API en Clever Cloud
+- 📱 Compatible con dispositivos móviles
+- 🎨 Diseño atractivo con Bootstrap
+
+## Tecnologías
+
+- HTML5, CSS3, JavaScript
+- Bootstrap 5
+- Font Awesome
+- API REST (Clever Cloud)
+
+## Uso
+
+1. Visita: [https://bigbossspektrum.github.io/QR](https://bigbossspektrum.github.io/QR)
+2. Ingresa la URL que quieres convertir a QR
+3. Opcionalmente añade una descripción
+4. Haz clic en "Generar QR"
+5. Descarga tu código QR
+
+Los códigos QR generados se guardan en la base de datos de Clever Cloud y las redirecciones funcionan a través del backend API.
+
+## Backend API
+
+- **URL**: $BACKEND_API_URL
+- **Endpoint**: \`POST /backend/api/generar-qr/\`
+- **Redirección**: \`GET /backend/qr/<uuid>/\`
+EOF
+
+# Verificar que los archivos se generaron correctamente
+if [ -f "github-pages/index.html" ]; then
+    echo "✅ Archivos estáticos generados correctamente en ./github-pages/"
+    echo "📁 Archivos creados:"
+    ls -la github-pages/
+    echo ""
+    echo "🔗 Backend configurado para: $BACKEND_API_URL"
+else
+    echo "❌ Error al generar archivos estáticos"
+    exit 1
+fi
+
+echo ""
+echo "🎉 ¡Generación completada!"
+echo ""
+echo "📋 Próximos pasos:"
+echo "1. Si no tienes backend desplegado, ejecuta: ./deploy-hibrido.sh"
+echo "2. Committea y pushea los cambios:"
+echo "   git add github-pages/"
+echo "   git commit -m 'Actualizar archivos estáticos para GitHub Pages'"
+echo "   git push origin main"
+echo "3. Configura GitHub Pages en Settings > Pages"
+echo "4. Prueba tu generador en: https://bigbossspektrum.github.io/QR"
+echo ""

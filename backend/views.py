@@ -28,7 +28,7 @@ def redirigir_qr(request, codigo):
 @require_http_methods(["POST"])
 def generar_qr(request):
     """
-    Endpoint para generar QR desde GitHub Pages
+    Endpoint principal para generar QR desde GitHub Pages
     No requiere autenticación para uso público
     """
     try:
@@ -38,6 +38,15 @@ def generar_qr(request):
         
         if not url:
             return JsonResponse({'error': 'URL es requerida'}, status=400)
+        
+        # Validar que la URL sea válida
+        try:
+            from urllib.parse import urlparse
+            parsed = urlparse(url)
+            if not parsed.scheme or not parsed.netloc:
+                return JsonResponse({'error': 'URL inválida. Debe incluir http:// o https://'}, status=400)
+        except:
+            return JsonResponse({'error': 'URL inválida'}, status=400)
         
         # Crear usuario anónimo si no está autenticado
         if request.user.is_authenticated:
@@ -49,7 +58,9 @@ def generar_qr(request):
                 username='github_pages_user',
                 defaults={
                     'email': 'github@pages.com',
-                    'is_active': True
+                    'is_active': True,
+                    'first_name': 'GitHub',
+                    'last_name': 'Pages'
                 }
             )
         
@@ -60,7 +71,7 @@ def generar_qr(request):
             usuario=usuario
         )
         
-        # Generar la URL de redirección
+        # Generar la URL de redirección completa
         redirect_url = f"{request.scheme}://{request.get_host()}/backend/qr/{codigo_qr.codigo}/"
         
         # Generar el código QR
@@ -87,12 +98,16 @@ def generar_qr(request):
             'codigo': str(codigo_qr.codigo),
             'imagen_base64': img_base64,
             'redirect_url': redirect_url,
+            'contenido_original': url,
             'descripcion': descripcion,
-            'usuario': request.user.username
+            'usuario': usuario.username,
+            'creado': codigo_qr.creado.isoformat()
         })
         
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'JSON inválido'}, status=400)
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+        return JsonResponse({'error': f'Error interno: {str(e)}'}, status=500)
 
 @login_required
 def descargar_qr(request, codigo):
@@ -197,6 +212,83 @@ def eliminar_qr(request, codigo):
 @login_required
 def toggle_qr_estado(request, codigo):
     """Vista para habilitar/deshabilitar un código QR"""
+    try:
+        codigo_qr = get_object_or_404(CodigoQR, codigo=codigo, usuario=request.user)
+        codigo_qr.activo = not codigo_qr.activo
+        codigo_qr.save()
+        
+        estado = "habilitado" if codigo_qr.activo else "deshabilitado"
+        return JsonResponse({
+            'success': True, 
+            'message': f'Código QR {estado} exitosamente',
+            'activo': codigo_qr.activo
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+# ===== NUEVAS VISTAS API PARA CLEVER CLOUD =====
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def mis_qr_codes_api(request):
+    """API endpoint para obtener todos los códigos QR del usuario"""
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Usuario no autenticado'}, status=401)
+    
+    try:
+        codigos = CodigoQR.objects.filter(usuario=request.user)
+        
+        qr_data = []
+        for codigo in codigos:
+            qr_data.append({
+                'codigo': str(codigo.codigo),
+                'contenido': codigo.contenido,
+                'descripcion': codigo.descripcion,
+                'creado': codigo.creado.isoformat(),
+                'accesos': codigo.accesos,
+                'activo': codigo.activo,
+                'redirect_url': f"{request.scheme}://{request.get_host()}/backend/qr/{codigo.codigo}/"
+            })
+        
+        # Calcular estadísticas
+        total_accesos = sum(codigo.accesos for codigo in codigos)
+        codigos_activos = codigos.filter(activo=True).count()
+        codigos_inactivos = codigos.filter(activo=False).count()
+        
+        return JsonResponse({
+            'success': True,
+            'qr_codes': qr_data,
+            'estadisticas': {
+                'total_codigos': codigos.count(),
+                'codigos_activos': codigos_activos,
+                'codigos_inactivos': codigos_inactivos,
+                'total_accesos': total_accesos
+            }
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["DELETE"])
+def eliminar_qr_api(request, codigo):
+    """API endpoint para eliminar un código QR del usuario"""
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Usuario no autenticado'}, status=401)
+    
+    try:
+        codigo_qr = get_object_or_404(CodigoQR, codigo=codigo, usuario=request.user)
+        codigo_qr.delete()
+        return JsonResponse({'success': True, 'message': 'Código QR eliminado exitosamente'})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def toggle_qr_estado_api(request, codigo):
+    """API endpoint para habilitar/deshabilitar un código QR"""
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Usuario no autenticado'}, status=401)
+    
     try:
         codigo_qr = get_object_or_404(CodigoQR, codigo=codigo, usuario=request.user)
         codigo_qr.activo = not codigo_qr.activo

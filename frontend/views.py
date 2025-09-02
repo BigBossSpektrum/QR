@@ -4,11 +4,20 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.conf import settings
 
 # Create your views here.
 @login_required
 def home(request):
     return render(request, 'home.html')
+
+def home_github_pages(request):
+    """Vista principal para GitHub Pages - generador de QR estático"""
+    context = {
+        'backend_api_url': getattr(settings, 'BACKEND_API_URL', 'https://tu-app.cleverapps.io'),
+        'title': 'Generador QR - GitHub Pages'
+    }
+    return render(request, 'frontend/github_pages.html', context)
 
 def custom_404(request, exception):
     return render(request, '404.html', status=404)

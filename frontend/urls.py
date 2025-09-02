@@ -1,10 +1,8 @@
-from django.urls import path, include
-from django.contrib.auth import views as auth_views
+# URLs del Frontend (para GitHub Pages)
+from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.home, name='home'),
-    path('login/', views.login_view, name='login'),
-    path('register/', views.register_view, name='register'),
-    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('', views.home_github_pages, name='home_github_pages'),
+    path('index.html', views.home_github_pages, name='home_github_pages_index'),
 ]
