@@ -1,0 +1,34 @@
+# GitHub Pages Configuration
+title: "🚀 Sistema QR Híbrido"
+description: "Generador de códigos QR con doble modo: directo y redirección via Clever Cloud"
+theme: minima
+
+# Configuración del sitio
+baseurl: "/QR"
+url: "https://bigbossspektrum.github.io"
+
+# Configuración de Jekyll
+markdown: kramdown
+highlighter: rouge
+permalink: pretty
+
+# Plugins
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+
+# Configuración de archivos
+include:
+  - _pages
+
+# Excluir archivos del build
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - node_modules/
+  - vendor/
+
+# Configuración para GitHub Pages
+github:
+  repository_nwo: BigBossSpektrum/QR
