@@ -1,13 +1,15 @@
-# QR Generator - Sistema de Códigos QR
+# 🚀 Sistema QR Híbrido: Clever Cloud + GitHub Pages
 
-Un generador de códigos QR profesional desarrollado en Django que permite crear, gestionar y descargar códigos QR con URLs de redirección personalizadas.
+## 📋 Descripción
+Sistema web híbrido para generación y gestión de códigos QR que combina lo mejor de dos mundos:
+- **Frontend estático** en GitHub Pages (rápido, gratuito, confiable)
+- **Backend Django** en Clever Cloud (gestión completa, base de datos)
 
-## 🚀 Características
+## ✨ Funcionalidades Principales
 
-- ✅ Generación instantánea de códigos QR
-- ✅ Descarga en formato PNG de alta calidad
-- ✅ URLs de redirección personalizadas
-- ✅ Almacenamiento en base de datos
+### 🎯 Doble Modo de Operación
+- **Modo Directo**: Generación instantánea de QR con JavaScript (sin backend)
+- **Modo Redirección**: QR con tracking y gestión completa vía Django
 - ✅ Interfaz web responsive
 - ✅ Seguimiento de códigos generados
 
