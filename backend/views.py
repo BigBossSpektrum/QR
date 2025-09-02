@@ -26,8 +26,11 @@ def redirigir_qr(request, codigo):
 
 @csrf_exempt
 @require_http_methods(["POST"])
-@login_required
 def generar_qr(request):
+    """
+    Endpoint para generar QR desde GitHub Pages
+    No requiere autenticación para uso público
+    """
     try:
         data = json.loads(request.body)
         url = data.get('url')
@@ -36,11 +39,25 @@ def generar_qr(request):
         if not url:
             return JsonResponse({'error': 'URL es requerida'}, status=400)
         
-        # Crear el objeto en la base de datos asociado al usuario
+        # Crear usuario anónimo si no está autenticado
+        if request.user.is_authenticated:
+            usuario = request.user
+        else:
+            # Crear o usar usuario anónimo para GitHub Pages
+            from django.contrib.auth.models import User
+            usuario, created = User.objects.get_or_create(
+                username='github_pages_user',
+                defaults={
+                    'email': 'github@pages.com',
+                    'is_active': True
+                }
+            )
+        
+        # Crear el objeto en la base de datos
         codigo_qr = CodigoQR.objects.create(
             contenido=url,
             descripcion=descripcion,
-            usuario=request.user
+            usuario=usuario
         )
         
         # Generar la URL de redirección

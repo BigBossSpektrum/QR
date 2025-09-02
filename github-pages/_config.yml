@@ -1,0 +1,34 @@
+# GitHub Pages Configuration
+title: "Generador QR"
+description: "Generador de códigos QR para GitHub Pages"
+theme: minima
+
+# Configuración del sitio
+baseurl: ""
+url: "https://bigbossspektrum.github.io"
+
+# Configuración de Jekyll
+markdown: kramdown
+highlighter: rouge
+permalink: pretty
+
+# Plugins
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+
+# Configuración de archivos
+include:
+  - _pages
+
+# Excluir archivos del build
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - node_modules/
+  - vendor/
+
+# Configuración para GitHub Pages
+github:
+  repository_nwo: BigBossSpektrum/QR

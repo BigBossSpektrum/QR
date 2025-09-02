@@ -1,0 +1,18 @@
+{
+  "deploy": {
+    "appIsRunning": true,
+    "environmentVariables": {
+      "DJANGO_SETTINGS_MODULE": "qr_site.clever_cloud_settings",
+      "SECRET_KEY": "tu-secret-key-aqui",
+      "POSTGRESQL_ADDON_HOST": "bihckcsbxtpycru7fzc3-postgresql.services.clever-cloud.com",
+      "POSTGRESQL_ADDON_DB": "bihckcsbxtpycru7fzc3",
+      "POSTGRESQL_ADDON_USER": "uv24d06xzigvcazpqhub",
+      "POSTGRESQL_ADDON_PORT": "5432",
+      "POSTGRESQL_ADDON_PASSWORD": "XpZCCVNaceAKNvn0wK3GgdqTpK3A7o",
+      "POSTGRESQL_ADDON_URI": "postgresql://uv24d06xzigvcazpqhub:XpZCCVNaceAKNvn0wK3GgdqTpK3A7o@bihckcsbxtpycru7fzc3-postgresql.services.clever-cloud.com:5432/bihckcsbxtpycru7fzc3"
+    }
+  },
+  "hooks": {
+    "postDeploy": "python manage.py migrate && python manage.py collectstatic --noinput"
+  }
+}
