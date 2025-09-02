@@ -3,7 +3,7 @@
     "appIsRunning": true,
     "environmentVariables": {
       "DJANGO_SETTINGS_MODULE": "qr_site.clever_cloud_settings",
-      "SECRET_KEY": "tu-secret-key-aqui",
+      "SECRET_KEY": "clcNf3davbuXL39wm67g0j+qSRZ81JZ7CcdpQq100fMd4Vph1p",
       "POSTGRESQL_ADDON_HOST": "bihckcsbxtpycru7fzc3-postgresql.services.clever-cloud.com",
       "POSTGRESQL_ADDON_DB": "bihckcsbxtpycru7fzc3",
       "POSTGRESQL_ADDON_USER": "uv24d06xzigvcazpqhub",
