@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generador QR - GitHub Pages</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <style>
         .qr-container {
             max-width: 600px;
@@ -187,6 +186,17 @@
         }
 
         function generateDirectQR(url, descripcion) {
+            // Verificar que QRCode esté disponible
+            if (typeof QRCode === 'undefined') {
+                alert('⚠️ La librería QRCode no está disponible. Intentando cargar...');
+                loadQRCodeLibrary().then(() => {
+                    generateDirectQR(url, descripcion);
+                }).catch(error => {
+                    alert('❌ Error: No se pudo cargar la librería QRCode. Por favor, recarga la página.');
+                });
+                return;
+            }
+            
             // Generar QR que apunta directamente al destino
             const canvas = document.getElementById('qrCanvas');
             
@@ -249,6 +259,12 @@
                 }
 
                 const data = await response.json();
+                
+                // Verificar que QRCode esté disponible
+                if (typeof QRCode === 'undefined') {
+                    alert('⚠️ La librería QRCode no está disponible. Intentando cargar...');
+                    await loadQRCodeLibrary();
+                }
                 
                 // Generar QR con la URL de redirección
                 const canvas = document.getElementById('qrCanvas');
@@ -413,6 +429,47 @@
                 loadHistory();
             }
         }
+    </script>
+    
+    <!-- QRCode.js Library with fallback loading -->
+    <script>
+        // Función para cargar QRCode.js con verificación
+        function loadQRCodeLibrary() {
+            return new Promise((resolve, reject) => {
+                // Si QRCode ya está disponible, resolver inmediatamente
+                if (typeof QRCode !== 'undefined') {
+                    resolve();
+                    return;
+                }
+                
+                // Crear script element
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js';
+                script.onload = () => {
+                    if (typeof QRCode !== 'undefined') {
+                        console.log('✅ QRCode library loaded successfully');
+                        resolve();
+                    } else {
+                        reject(new Error('QRCode library failed to load'));
+                    }
+                };
+                script.onerror = () => {
+                    reject(new Error('Failed to load QRCode library from CDN'));
+                };
+                
+                document.head.appendChild(script);
+            });
+        }
+        
+        // Inicializar cuando DOM esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            loadQRCodeLibrary().then(() => {
+                console.log('🚀 QR Generator ready!');
+            }).catch(error => {
+                console.error('❌ Error loading QRCode library:', error);
+                alert('Error cargando la librería QRCode. Por favor, recarga la página.');
+            });
+        });
     </script>
 </body>
 </html>
