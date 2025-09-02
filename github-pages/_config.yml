@@ -1,15 +1,14 @@
-# GitHub Pages configuration
+# GitHub Pages configuration for QR Generator
 title: "Generador QR"
-description: "Generador de códigos QR con backend en Clever Cloud"
-baseurl: ""
+description: "Generador de códigos QR híbrido con backend en Clever Cloud"
+baseurl: "/QR"
 url: "https://bigbossspektrum.github.io"
 
 # Jekyll configuration
 markdown: kramdown
 highlighter: rouge
-theme: minima
 
-# Exclude files
+# Exclude files from processing
 exclude:
   - README.md
   - Gemfile
@@ -20,13 +19,27 @@ exclude:
   - .sass-cache
   - .jekyll-cache
   - .jekyll-metadata
+  - "*.sh"
+  - "*.py"
 
-# Include files
+# Include specific files
 include:
   - _config.yml
+  - index.html
 
-# GitHub Pages specific
+# GitHub Pages settings
 plugins:
   - jekyll-feed
   - jekyll-sitemap
-  - jekyll-seo-tag
+
+# Disable Jekyll processing for static site
+# This ensures index.html is served as-is
+jekyll:
+  process: false
+
+# Set default layout to null (no processing)
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: null
