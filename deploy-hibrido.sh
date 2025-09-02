@@ -58,11 +58,28 @@ if ask_yes_no "¿Quieres hacer deploy a Clever Cloud?"; then
     # Variables de entorno necesarias
     echo "🔧 Configurando variables de entorno..."
     
-    read -p "Ingresa tu SECRET_KEY para Django: " SECRET_KEY
+    # Configuración de base de datos PostgreSQL
+    clever env set POSTGRESQL_ADDON_DB "bihckcsbxtpycru7fzc3"
+    clever env set POSTGRESQL_ADDON_HOST "bihckcsbxtpycru7fzc3-postgresql.services.clever-cloud.com"
+    clever env set POSTGRESQL_ADDON_PASSWORD "XpZCCVNaceAKNvn0wK3GgdqTpK3A7o"
+    clever env set POSTGRESQL_ADDON_PORT "5432"
+    clever env set POSTGRESQL_ADDON_URI "postgresql://uv24d06xzigvcazpqhub:XpZCCVNaceAKNvn0wK3GgdqTpK3A7o@bihckcsbxtpycru7fzc3-postgresql.services.clever-cloud.com:5432/bihckcsbxtpycru7fzc3"
+    clever env set POSTGRESQL_ADDON_USER "uv24d06xzigvcazpqhub"
+    clever env set POSTGRESQL_ADDON_VERSION "15"
+    
+    # Configuración Django
+    read -p "Ingresa tu SECRET_KEY para Django (o presiona Enter para generar una nueva): " SECRET_KEY
+    if [ -z "$SECRET_KEY" ]; then
+        SECRET_KEY=$(python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())")
+        echo "✅ SECRET_KEY generada automáticamente"
+    fi
     clever env set SECRET_KEY "$SECRET_KEY"
     
     clever env set DEBUG "False"
     clever env set DJANGO_SETTINGS_MODULE "qr_site.clever_cloud_settings"
+    
+    # CORS para GitHub Pages
+    clever env set CORS_ALLOWED_ORIGINS "https://bigbossspektrum.github.io"
     
     # Obtener el dominio de la app
     APP_DOMAIN=$(clever domain list | grep -o 'app-[a-z0-9-]*\.cleverapps\.io' | head -n1)
